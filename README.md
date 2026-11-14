@@ -16,6 +16,6 @@ Sketches and studies in ink and watercolor by Chandira Imanjith, a first-year ar
 
 The contact form doesn't send anything itself: it opens your own email app with the note ready to send. You can also write directly to [imangithchandira@gmail.com](mailto:imangithchandira@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/chandira-imanjith-b4b7283a2).
 
-## Using the drawings
+## Licence
 
-All drawings are © Chandira Imanjith. Please ask before reusing them.
+All rights reserved. The drawings, photographs, writing, code and design are © Chandira Imanjith and may not be reused without written permission. The Newsreader typeface is used under the SIL Open Font License. See [LICENSE](LICENSE) for the full terms.
