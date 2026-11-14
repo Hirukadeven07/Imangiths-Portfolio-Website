@@ -299,11 +299,7 @@
   function show() {
     if (shown) return;
     shown = true;
-    // If a page transition is still lifting, wait for it so the entrance is seen.
-    var wait = document.documentElement.classList.contains('pt-covered') ? 450 : 0;
-    setTimeout(function () {
-      if (root.getAttribute('data-status') === 'loading') root.setAttribute('data-status', 'idle');
-    }, wait);
+    if (root.getAttribute('data-status') === 'loading') root.setAttribute('data-status', 'idle');
   }
   var pending = nodes.length;
   nodes.forEach(function (n) {

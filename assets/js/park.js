@@ -2,8 +2,8 @@
 
    Everything that is ground (lawns, contours, trees, garden rooms) is drawn very
    lightly, like the base layer of a site plan. The routes that link one project's
-   pieces are the strong marks: a timber boardwalk, stepping stones, a sand path
-   or a stream. The park is laid out around the pieces and routes it is given, so
+   pieces are the strong marks: a timber boardwalk, stepping stones, a sand path,
+   a gravel walk or a stream. The park is laid out around the pieces and routes it is given, so
    it rearranges itself when projects are added or moved in data.js. */
 (function () {
   'use strict';
@@ -16,9 +16,10 @@
     stream:    { half: 18, layers: 3, wiggle: 1.25 },
     stones:    { half: 8, layers: 1, wiggle: 0.9 },
     sand:      { half: 14, layers: 2, wiggle: 0.8 },
+    gravel:    { half: 12, layers: 3, wiggle: 0.7 },
     boardwalk: { half: 16, layers: 3, wiggle: 0.45 }
   };
-  var ORDER = ['stream', 'stones', 'sand', 'boardwalk'];      // drawn bottom to top
+  var ORDER = ['stream', 'stones', 'gravel', 'sand', 'boardwalk'];      // drawn bottom to top
 
   function el(name, attrs, parent) {
     var node = document.createElementNS(NS, name);
@@ -325,7 +326,7 @@
     var streams = links.filter(function (l) { return l.type === 'stream'; });
     streams.forEach(function (s) { s.box = box(s.pts); });
     links.forEach(function (l) {
-      if (l.type !== 'boardwalk' && l.type !== 'sand') return;
+      if (l.type !== 'boardwalk' && l.type !== 'sand' && l.type !== 'gravel') return;
       var b = box(l.pts), half = ROUTES[l.type].half, placed = [];
       streams.forEach(function (s) {
         if (b[0] > s.box[2] || b[2] < s.box[0] || b[1] > s.box[3] || b[3] < s.box[1]) return;
