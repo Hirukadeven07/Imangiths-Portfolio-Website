@@ -24,7 +24,7 @@ Everything shown on the site is defined in `assets/js/data.js`. The comment at t
 ## Running locally
 
 ```bash
-python -m http.server 4173
+python serve.py
 ```
 
-Then open http://localhost:4173.
+Then open http://localhost:4173. `serve.py` tells the browser not to keep old copies of pages, so a normal reload always shows your latest edits.
