@@ -1,6 +1,30 @@
 # Source PDFs and photos the web images were cut from (large; kept locally)
 originals/
 
+# Safety net: original scans, photos and documents anywhere in the project.
+# Only the web-ready images in assets/img/ and docs/ are meant to be public.
+*.pdf
+*.psd
+*.ai
+*.heic
+*.heif
+*.tif
+*.tiff
+*.raw
+*.dng
+*.cr2
+*.cr3
+*.nef
+*.arw
+*.doc
+*.docx
+*.png
+*.jpg
+*.jpeg
+*.webp
+!assets/img/*
+!docs/*
+
 # OS and editor clutter
 .DS_Store
 Thumbs.db
