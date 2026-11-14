@@ -1,0 +1,9 @@
+# Source PDFs and photos the web images were cut from (large; kept locally)
+originals/
+
+# OS and editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
