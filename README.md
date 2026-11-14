@@ -6,7 +6,7 @@ A static portfolio site: sketches and studies shown on a pannable park map, with
 
 ```
 index.html        Home: the park map
-projects.html     All projects, as a looping list
+projects.html     All projects, as a bento grid on a cutting mat
 project.html      One project (project.html?p=<slug>)
 about.html        About
 contact.html      Contact

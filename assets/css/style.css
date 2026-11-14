@@ -10,7 +10,6 @@
   --ui-line: #e3e0d9;
   --ui-tick: #b7b2a6;
   --ui-hover: #f4f2ee;
-  --cover: #2c1d12;                 /* page-transition screen */
 
   --m: 20px;                        /* grid margin and gutter */
   --line: calc(clamp(640px, 100vh, 1200px) / 37.5);
@@ -18,7 +17,6 @@
   --col: calc((100vw - 13 * var(--m)) / 12);
 
   --ease-out: cubic-bezier(.16, 1, .3, 1);
-  --ease-page: cubic-bezier(.58, .08, .13, 1);
   --font: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
 }
 
@@ -126,19 +124,6 @@ main { flex: 1 0 auto; }
 .footer a { transition: opacity .2s; }
 .footer a:hover { opacity: .5; }
 
-/* ---------- page transition screen ---------- */
-
-.pt {
-  position: fixed; inset: 0; z-index: 2147483647;
-  background: var(--cover);
-  transform: translateY(100%);
-  pointer-events: none;
-  will-change: transform;
-}
-.pt-enter .pt   { transform: translateY(0); transition: transform .8s var(--ease-page); pointer-events: auto; }
-.pt-covered .pt { transform: translateY(0); }
-.pt-exit .pt    { transform: translateY(-100%); transition: transform .9s var(--ease-page); }
-
 /* ---------- reveals (only when JS is running) ---------- */
 
 .w  { display: inline-block; overflow: hidden; vertical-align: top; text-indent: 0; padding-bottom: .16em; margin-bottom: -.16em; }
@@ -215,6 +200,10 @@ main { flex: 1 0 auto; }
 .park__route--sand .r1 { stroke: #eedd9c; stroke-width: 28; }
 .park__route--sand .r2 { stroke: #fef9e4; stroke-width: 24; }
 
+.park__route--gravel .r1 { stroke: #cdc8bd; stroke-width: 24; }
+.park__route--gravel .r2 { stroke: #f7f5f0; stroke-width: 20; }
+.park__route--gravel .r3 { stroke: #d6d1c6; stroke-width: 3; stroke-dasharray: 0 14; }
+
 .park__route--stones .r1 { stroke: #a3a3a3; stroke-width: 16; stroke-dasharray: 20 12; stroke-linecap: butt; }
 
 .park__bridge { fill: none; stroke: #c6c2b8; stroke-linecap: butt; }
@@ -241,15 +230,6 @@ main { flex: 1 0 auto; }
 }
 .map__link:focus-visible .map__img { filter: brightness(1.03); }
 
-.map__caption {
-  position: absolute; left: var(--m); bottom: var(--m); z-index: 10;
-  max-width: 20rem;
-  font-size: .875rem; line-height: 1.25;
-  color: #fff;
-  mix-blend-mode: difference;
-  pointer-events: none;
-}
-
 .map__hint {
   position: absolute; top: 0; left: 0; z-index: 20;
   font-size: .875rem; line-height: 1.25;
@@ -261,73 +241,65 @@ main { flex: 1 0 auto; }
 .map__hint span { display: block; padding: 6px 10px; background: rgba(255, 255, 255, .85); }
 .map__hint.is-on { opacity: 1; transition-delay: .5s; }
 
-.map__zoom {
-  position: absolute; top: 50%; right: max(16px, env(safe-area-inset-right));
-  transform: translateY(-50%);
-  z-index: 30;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  cursor: default;
-}
-.map__zoom-btn {
-  display: grid; place-items: center;
-  width: 36px; height: 36px;
-  color: var(--ink);
-  background: rgba(255, 255, 255, .9);
-  border: 1px solid var(--ui-line);
-  border-radius: 10px;
-  transition: background .2s, opacity .2s;
-}
-.map__zoom-btn:hover:not(:disabled) { background: var(--ui-hover); }
-.map__zoom-btn:disabled { opacity: .35; cursor: default; }
-.map__zoom-ticks {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  width: 36px; padding: 6px 0;
-  background: rgba(255, 255, 255, .9);
-  border: 1px solid var(--ui-line);
-  border-radius: 10px;
-}
-.map__zoom-tick { display: grid; place-items: center; width: 100%; height: 14px; }
-.map__zoom-tick::after { content: ""; width: 12px; height: 1px; background: var(--ui-tick); transition: width .2s, background .2s; }
-.map__zoom-tick:hover::after { background: var(--ink); }
-.map__zoom-tick[aria-current]::after { width: 20px; background: var(--ink); }
-@media (pointer: coarse) {
-  .map__zoom-btn { width: 44px; height: 44px; }
-  .map__zoom-ticks { width: 44px; }
-  .map__zoom-tick { height: 20px; }
-}
-@media (max-width: 600px) {
-  .map__caption { max-width: min(17rem, calc(100vw - 2 * var(--m) - 60px)); }
-}
 
 .map__noscript { position: absolute; inset: 0; display: grid; place-content: center; gap: .5em; text-align: center; }
 
 /* ==========================================================================
-   Projects — looping, alternating list
+   Projects — a bento grid laid on a cutting mat
    ========================================================================== */
 
-.is-loop { scrollbar-width: none; }
-.is-loop::-webkit-scrollbar { display: none; }
+/* The mat: a faint 1 cm grid with heavier 5 cm lines, rulers and angle guides. */
+.mat {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  --mat-cell: 20px;
+  /* a breath of green that fades to white towards the top and right */
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right, rgba(46, 125, 90, .05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 125, 90, .05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(46, 125, 90, .024) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 125, 90, .024) 1px, transparent 1px);
+  background-size:
+    calc(var(--mat-cell) * 5) calc(var(--mat-cell) * 5), calc(var(--mat-cell) * 5) calc(var(--mat-cell) * 5),
+    var(--mat-cell) var(--mat-cell), var(--mat-cell) var(--mat-cell);
+  background-position: var(--m) var(--m);
+}
+.mat::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, rgba(46, 125, 90, .045), rgba(46, 125, 90, 0) 70%); }
+.mat svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.mat__guide { fill: none; stroke: rgba(46, 125, 90, .06); stroke-width: 1; }
+.mat__mark  { fill: rgba(46, 125, 90, .16); font-family: var(--font); font-size: 9px; letter-spacing: .04em; }
 
-.plist { row-gap: 10em; padding-block: 5em; }
-.plist__item { display: block; grid-column: 1 / span 6; }
-.plist__item:nth-child(even) { grid-column: 7 / span 6; }
-.plist__item--tall { grid-column: 1 / span 5; }
-.plist__item--tall:nth-child(even) { grid-column: 8 / span 5; }
-/* never let a piece grow taller than the screen */
-.plist__item article { max-width: calc((100vh - 9rem) * var(--ar, 1)); }
-.plist__item:nth-child(even) article { margin-left: auto; }
-.plist__title { margin-top: 4px; font-size: .875rem; line-height: 1.25; transition: opacity .3s; }
-.plist__item .media img { transition: opacity 1.1s ease, filter 1.4s ease, transform 1.2s var(--ease-out); }
+/* Two columns of tiles, each at its drawing's own proportions, so nothing is
+   cropped; the columns end at different heights and the page scrolls. */
+.bento {
+  position: relative; z-index: 1;
+  display: flex; align-items: flex-start; gap: 28px;
+  max-width: 1500px; margin-inline: auto;
+  padding: calc(var(--m) * 2 + 2.4rem) clamp(var(--m), 5vw, 96px) 56px;
+}
+.bento__col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
+.bento__item { position: relative; display: block; }
+.bento__item .media {
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(32, 32, 32, .06), 0 10px 30px rgba(32, 32, 32, .07);
+}
+.bento__item .media img { transition: opacity 1.1s ease, filter 1.4s ease, transform 1.2s var(--ease-out); }
+.bento__title {
+  position: absolute; left: 10px; bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .88);
+  font-size: .875rem; line-height: 1.25;
+}
 @media (hover: hover) {
-  .plist__item:hover .plist__title { opacity: .4; }
-  .plist__item:hover .media img { transform: scale(1.015); }
+  .bento__item:hover .media img { transform: scale(1.03); }
 }
 
-@media (max-width: 991px) {
-  .plist { row-gap: 6em; padding-block: 3em; }
-  .plist__item, .plist__item:nth-child(even),
-  .plist__item--tall, .plist__item--tall:nth-child(even) { grid-column: 1 / -1; }
-  .plist__item article { max-width: none; }
+/* Small screens: one column, in project order. */
+@media (max-width: 767px) {
+  .bento { flex-direction: column; align-items: stretch; gap: var(--m); padding-bottom: 40px; }
+  .bento__col { display: contents; }
 }
 
 /* ==========================================================================
@@ -463,7 +435,7 @@ main { flex: 1 0 auto; }
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .map__world, .map__link, .wi, .media img, .pt { transition: none !important; }
+  .map__world, .map__link, .wi, .media img { transition: none !important; }
   .park__route { transition: opacity .2s; }
   .map__hint.is-on { transition-delay: 0s; }
   .form__step.is-active { animation: none; }

@@ -16,9 +16,6 @@
   var world = root.querySelector('.map__world');
   var hint = root.querySelector('.map__hint');
   var hintLabel = hint.querySelector('span');
-  var btnIn = root.querySelector('[data-zoom="in"]');
-  var btnOut = root.querySelector('[data-zoom="out"]');
-  var tickBox = root.querySelector('.map__zoom-ticks');
 
   world.style.width = W + 'px';
   world.style.height = H + 'px';
@@ -157,7 +154,6 @@
     target.y = vh / 2 - wy * target.s;
     clamp();
     if (!ready) { cur.x = target.x; cur.y = target.y; cur.s = target.s; ready = true; }
-    syncZoomUi();
   }
 
   function zoomTo(s, fx, fy) {
@@ -167,7 +163,6 @@
     target.y = fy - (fy - target.y) * k;
     target.s = s;
     clamp();
-    syncZoomUi();
   }
 
   function setLevel(i) { zoomTo(sMin * Math.pow(STEP, Math.max(0, Math.min(LEVELS - 1, i))), vw / 2, vh / 2); }
@@ -178,32 +173,6 @@
     clamp();
   }
 
-  /* ---------- zoom control ---------- */
-
-  var ticks = [];
-  for (var i = LEVELS - 1; i >= 0; i--) {
-    (function (level) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'map__zoom-tick';
-      b.setAttribute('aria-label', 'Zoom level ' + (level + 1) + ' of ' + LEVELS);
-      b.addEventListener('click', function () { setLevel(level); });
-      tickBox.appendChild(b);
-      ticks[level] = b;
-    })(i);
-  }
-  btnIn.addEventListener('click', function () { setLevel(Math.floor(levelOf(target.s) + 1.001)); });
-  btnOut.addEventListener('click', function () { setLevel(Math.ceil(levelOf(target.s) - 1.001)); });
-
-  function syncZoomUi() {
-    var level = Math.max(0, Math.min(LEVELS - 1, Math.round(levelOf(target.s))));
-    ticks.forEach(function (b, i) {
-      if (i === level) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
-    });
-    btnIn.disabled = target.s >= sMax * 0.999;
-    btnOut.disabled = target.s <= sMin * 1.001;
-  }
-
   /* ---------- input: drag, pinch, wheel, keys ---------- */
 
   var pointers = new Map();
@@ -212,7 +181,6 @@
 
   root.addEventListener('pointerdown', function (e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    if (e.target.closest('.map__zoom')) return;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     pinch = null;
     if (pointers.size === 1) {
@@ -287,8 +255,8 @@
       case 'ArrowRight': target.x -= step; break;
       case 'ArrowUp': target.y += step; break;
       case 'ArrowDown': target.y -= step; break;
-      case '+': case '=': btnIn.click(); return;
-      case '-': case '_': btnOut.click(); return;
+      case '+': case '=': setLevel(Math.floor(levelOf(target.s) + 1.001)); return;
+      case '-': case '_': setLevel(Math.ceil(levelOf(target.s) - 1.001)); return;
       default: return;
     }
     e.preventDefault();
@@ -331,11 +299,7 @@
   function show() {
     if (shown) return;
     shown = true;
-    // If a page transition is still lifting, wait for it so the entrance is seen.
-    var wait = document.documentElement.classList.contains('pt-covered') ? 450 : 0;
-    setTimeout(function () {
-      if (root.getAttribute('data-status') === 'loading') root.setAttribute('data-status', 'idle');
-    }, wait);
+    if (root.getAttribute('data-status') === 'loading') root.setAttribute('data-status', 'idle');
   }
   var pending = nodes.length;
   nodes.forEach(function (n) {

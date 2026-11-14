@@ -1,119 +1,93 @@
-/* Projects: an alternating list that loops forever in both directions. */
+/* Projects: a bento grid of every project, laid on an architect's cutting mat. */
 (function () {
   'use strict';
 
   var host = document.querySelector('[data-projects]');
   if (!host || !window.PROJECTS) return;
 
-  var COPIES = 5, MIDDLE = 2;
-  var loop = !window.Site.reduce;
-  var copies = [];
+  /* ---------- the grid ---------- */
 
-  function buildList(isClone) {
-    var list = document.createElement('div');
-    list.className = 'grid plist';
-    if (isClone) list.setAttribute('aria-hidden', 'true');
-
-    window.PROJECTS.forEach(function (p, i) {
-      var cover = p.cover, ratio = cover[1] / cover[2];
-
-      var a = document.createElement('a');
-      a.className = 'plist__item' + (ratio < 0.9 ? ' plist__item--tall' : '');
-      a.href = 'project.html?p=' + encodeURIComponent(p.slug);
-      a.style.gridRow = String(i + 1);
-      a.style.setProperty('--ar', ratio.toFixed(4));
-      if (isClone) a.tabIndex = -1;
-
-      var article = document.createElement('article');
-
-      var media = document.createElement('div');
-      media.className = 'media';
-      media.style.aspectRatio = cover[1] + ' / ' + cover[2];
-      media.setAttribute('data-index', i);
-
-      var img = document.createElement('img');
-      img.src = window.Site.img(cover[0]);
-      img.alt = isClone ? '' : p.title;
-      img.width = cover[1];
-      img.height = cover[2];
-      img.decoding = 'async';
-      media.appendChild(img);
-
-      var title = document.createElement('p');
-      title.className = 'plist__title';
-      title.textContent = p.title;
-
-      article.appendChild(media);
-      article.appendChild(title);
-      a.appendChild(article);
-      list.appendChild(a);
-    });
-    return list;
-  }
-
-  for (var c = 0; c < (loop ? COPIES : 1); c++) {
-    var list = buildList(loop && c !== MIDDLE);
-    host.appendChild(list);
-    copies.push(list);
-  }
-
-  /* Reveal a piece in every copy at once, so jumping between copies is invisible. */
-  var medias = Array.prototype.slice.call(host.querySelectorAll('.media'));
-  function revealIndex(index) {
-    medias.forEach(function (m) { if (m.getAttribute('data-index') === index) m.classList.add('is-in'); });
-  }
-  if ('IntersectionObserver' in window && !window.Site.reduce) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) { if (en.isIntersecting) revealIndex(en.target.getAttribute('data-index')); });
-    }, { threshold: 0.05 });
-    setTimeout(function () { medias.forEach(function (m) { io.observe(m); }); },
-      document.documentElement.classList.contains('pt-covered') ? 480 : 40);
-  } else {
-    medias.forEach(function (m) { m.classList.add('is-in'); });
-  }
-
-  if (!loop) return;
-
-  /* ---------- the loop: always come to rest inside the middle copy ---------- */
-
-  document.documentElement.classList.add('is-loop');
-  try { history.scrollRestoration = 'manual'; } catch (e) {}
-
-  var H = 0, idle = 0, lead = 0;
-  var header = document.querySelector('.header');
-
-  // `lead` is how far above a copy's top the page rests, so that on small
-  // screens the first piece clears the fixed header.
-  function measure() {
-    H = copies[0].offsetHeight;
-    var top = parseFloat(getComputedStyle(copies[0]).paddingTop) || 0;
-    lead = Math.max(0, (header ? header.offsetHeight : 0) + 8 - top);
-  }
-
-  function recentre() {
-    if (!H) return;
-    var y = window.scrollY, start = H * MIDDLE - lead;
-    if (y < start || y >= start + H) {
-      var into = ((y - start) % H + H) % H;
-      window.scrollTo(0, start + into);
-    }
-  }
-
-  function onScroll() {
-    var y = window.scrollY;
-    // Close to either end of the strip: jump straight away rather than hit the wall.
-    if (y < H * 0.5 || y > H * (COPIES - 0.5) - window.innerHeight) { recentre(); return; }
-    clearTimeout(idle);
-    idle = setTimeout(recentre, 140);
-  }
-
-  measure();
-  window.scrollTo(0, H * MIDDLE - lead);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', function () {
-    var into = H ? ((window.scrollY + lead - H * MIDDLE) % H + H) % H / H : 0;
-    measure();
-    window.scrollTo(0, H * MIDDLE - lead + into * H);
+  // Two columns, filled alternately, so tall and wide tiles interlock.
+  var cols = [0, 1].map(function () {
+    var col = document.createElement('div');
+    col.className = 'bento__col';
+    host.appendChild(col);
+    return col;
   });
-  window.addEventListener('load', function () { measure(); recentre(); });
+
+  window.PROJECTS.forEach(function (p, i) {
+    var image = p.tile || p.cover;
+
+    var a = document.createElement('a');
+    a.className = 'bento__item';
+    a.href = 'project.html?p=' + encodeURIComponent(p.slug);
+    a.style.order = String(i);                     // keeps project order when the columns collapse
+
+    var media = document.createElement('div');
+    media.className = 'media';
+    media.style.aspectRatio = image[1] + ' / ' + image[2];
+    media.setAttribute('data-reveal', 'img');
+
+    var img = document.createElement('img');
+    img.src = window.Site.img(image[0]);
+    img.alt = '';
+    img.width = image[1];
+    img.height = image[2];
+    img.decoding = 'async';
+    media.appendChild(img);
+
+    var title = document.createElement('span');
+    title.className = 'bento__title';
+    title.textContent = p.title;
+
+    a.appendChild(media);
+    a.appendChild(title);
+    cols[i % 2].appendChild(a);
+  });
+
+  /* ---------- the mat's markings: rulers along two edges, angle guides from a corner ---------- */
+
+  var mat = document.querySelector('[data-mat]');
+  if (!mat) return;
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(NS, 'svg');
+  mat.appendChild(svg);
+
+  function add(name, attrs, text) {
+    var node = document.createElementNS(NS, name);
+    for (var key in attrs) node.setAttribute(key, attrs[key]);
+    if (text != null) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var w = window.innerWidth, h = window.innerHeight;
+    var m = 20, cell = 20, major = cell * 5;          // matches --m and --mat-cell in style.css
+    var x, y, i;
+
+    // Rulers: a number at every heavy line, counted in centimetres.
+    for (x = m + major, i = 5; x < w - 30; x += major, i += 5) {
+      add('text', { 'class': 'mat__mark', x: x + 3, y: h - 6 }, i);
+    }
+    for (y = h - m - major, i = 5; y > 70; y -= major, i += 5) {
+      add('text', { 'class': 'mat__mark', x: 4, y: y - 3 }, i);
+    }
+
+    // Angle guides fanning out from the bottom-left corner, as on a cutting mat.
+    var ox = m, oy = h - m, reach = Math.hypot(w, h);
+    [15, 30, 45, 60, 75].forEach(function (deg) {
+      var r = deg * Math.PI / 180;
+      add('line', { 'class': 'mat__guide', x1: ox, y1: oy, x2: ox + Math.cos(r) * reach, y2: oy - Math.sin(r) * reach });
+      add('text', { 'class': 'mat__mark', x: ox + Math.cos(r) * 150 + 4, y: oy - Math.sin(r) * 150 - 4 }, deg + '°');
+    });
+    [100, 200].forEach(function (radius) {
+      add('path', { 'class': 'mat__guide', d: 'M ' + (ox + radius) + ' ' + oy + ' A ' + radius + ' ' + radius + ' 0 0 0 ' + ox + ' ' + (oy - radius) });
+    });
+  }
+
+  draw();
+  window.addEventListener('resize', draw);
 })();

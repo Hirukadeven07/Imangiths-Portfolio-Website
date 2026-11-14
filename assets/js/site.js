@@ -1,4 +1,4 @@
-/* Shared behaviour: page transitions, reveals, header state. */
+/* Shared behaviour: reveals and header state. */
 (function () {
   'use strict';
 
@@ -13,53 +13,6 @@
   function onScroll() { html.classList.toggle('is-scrolled', window.scrollY > 8); }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  /* ---------- page transition: a screen slides up, the next page lifts it away ---------- */
-
-  var arrivedCovered = html.classList.contains('pt-covered');
-  try { sessionStorage.removeItem('pt'); } catch (e) {}
-
-  if (arrivedCovered) {
-    if (reduce) {
-      html.classList.remove('pt-covered');
-    } else {
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          html.classList.add('pt-exit');
-          setTimeout(function () { html.classList.remove('pt-covered', 'pt-exit'); }, 1000);
-        });
-      });
-    }
-  }
-
-  // Coming back through the browser's back/forward cache: make sure nothing is left covering the page.
-  window.addEventListener('pageshow', function (e) {
-    if (e.persisted) html.classList.remove('pt-enter', 'pt-covered', 'pt-exit');
-  });
-
-  function go(url) {
-    if (reduce) { window.location.href = url; return; }
-    if (html.classList.contains('pt-enter')) return;
-    html.classList.add('pt-enter');
-    setTimeout(function () {
-      try { sessionStorage.setItem('pt', '1'); } catch (e) {}
-      window.location.href = url;
-    }, 820);
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    var a = e.target.closest ? e.target.closest('a[href]') : null;
-    if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return;
-    var href = a.getAttribute('href');
-    if (!href || href.charAt(0) === '#' || /^(mailto|tel):/i.test(href)) return;
-    var url;
-    try { url = new URL(a.href, window.location.href); } catch (err) { return; }
-    if (url.protocol !== window.location.protocol || url.host !== window.location.host) return;
-    e.preventDefault();
-    if (url.pathname === window.location.pathname && url.search === window.location.search) return;
-    go(url.href);
-  });
 
   /* ---------- reveals ---------- */
 
@@ -113,12 +66,10 @@
   }
 
   window.Site = {
-    go: go,
     reduce: reduce,
     img: function (name) { return window.SITE.imgPath + name + window.SITE.imgExt; }
   };
 
-  // Page scripts build their markup synchronously; start revealing once the
-  // transition screen (if any) has begun to lift.
-  setTimeout(reveal, arrivedCovered && !reduce ? 480 : 40);
+  // Page scripts build their markup synchronously; start revealing right after.
+  setTimeout(reveal, 40);
 })();

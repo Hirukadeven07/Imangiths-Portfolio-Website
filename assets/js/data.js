@@ -4,14 +4,15 @@
   To add a project:
     1. Put its images in assets/img/ (any web format; .webp is used below).
     2. Add an entry to PROJECTS with a unique `slug`.
-       - `cover`  : image shown on the Projects page.
+       - `cover`  : image shown on the Projects page. An optional `tile` replaces it
+                    there when the grid cell suits a differently shaped image.
        - `rows`   : image rows on the project page. Each image sits on a 12-column
                     grid: `cols: [startColumn, columnSpan]`.
        - `nodes`  : the pieces that float on the home-page map. `x`/`y` are the
                     centre of the image in map units (the map is 6000 x 4200) and
                     `size` is its width in map units.
        - `route`  : how this project's pieces are joined across the park on the home
-                    page: 'boardwalk', 'stones', 'sand' or 'stream'.
+                    page: 'boardwalk', 'stones', 'sand', 'stream' or 'gravel'.
     Image entries are [fileNameWithoutExtension, pixelWidth, pixelHeight].
 */
 
@@ -108,6 +109,7 @@ window.PROJECTS = [
       ['Drawn by', 'Chandira Imanjith']
     ],
     cover: ['malaga', 1250, 1725],
+    tile: ['malaga-street', 1192, 831],
     rows: [
       [
         { img: ['malaga', 1250, 1725], cols: [1, 6] },
@@ -167,6 +169,36 @@ window.PROJECTS = [
       { img: ['marseille-cat', 364, 364], x: 3540, y: 2740, size: 350 },
       { img: ['marseille-plants', 412, 412], x: 1500, y: 2700, size: 380 },
       { img: ['marseille-figures', 348, 348], x: 5420, y: 2640, size: 340 }
+    ]
+  },
+  {
+    slug: 'colombo-town-hall',
+    title: 'Colombo Town Hall',
+    route: 'gravel',
+    description:
+      'Colombo Town Hall: a neoclassical landmark with a central dome, pedimented columned portico, and symmetrical two-storey wings.',
+    meta: [
+      ['Type', 'Building sketch'],
+      ['Place', 'Colombo, Sri Lanka'],
+      ['Medium', 'Ink on paper'],
+      ['Drawn by', 'Chandira Imanjith']
+    ],
+    cover: ['townhall', 1320, 660],
+    rows: [
+      [
+        { img: ['townhall', 1320, 660], cols: [1, 12] }
+      ],
+      'meta',
+      [
+        { img: ['townhall-dome', 264, 264], cols: [1, 3], caption: 'The central dome' },
+        { img: ['townhall-portico', 352, 352], cols: [4, 4], caption: 'The pedimented, columned portico' },
+        { img: ['townhall-wing', 330, 330], cols: [9, 4], caption: 'One of the symmetrical two-storey wings' }
+      ]
+    ],
+    nodes: [
+      { img: ['townhall-md', 900, 450], x: 3460, y: 3740, size: 620 },
+      { img: ['townhall-dome', 264, 264], x: 5440, y: 3690, size: 330 },
+      { img: ['townhall-portico', 352, 352], x: 560, y: 3700, size: 370 }
     ]
   }
 ];
