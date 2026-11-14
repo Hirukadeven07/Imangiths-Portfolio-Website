@@ -92,6 +92,21 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .header a:hover { opacity: .4; }
 .header__links a[aria-current="page"] { opacity: .5; }
 
+/* Touch screens: give each header link a ~44px tap area. The padding is
+   cancelled by an equal negative margin, so nothing moves visually; the
+   8px sides meet exactly in the 16px gap, so the areas never overlap. */
+@media (pointer: coarse), (max-width: 600px) {
+  .header__logo, .header__links a {
+    display: inline-block;
+    padding: calc((44px - 1lh) / 2) 8px;
+    margin: calc((44px - 1lh) / -2) -8px;
+  }
+}
+/* Phones: larger menu text, just under the size of the name. */
+@media (max-width: 600px) {
+  .header__links { font-size: 1.0625rem; }
+}
+
 .topfade { position: fixed; inset: 0 0 auto 0; height: 50vh; z-index: 90; pointer-events: none; }
 .topfade__blur {
   position: absolute; inset: 0 0 auto 0;
