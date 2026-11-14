@@ -12,7 +12,7 @@
   var project = window.PROJECTS[index];
   var next = window.PROJECTS[(index + 1) % window.PROJECTS.length];
 
-  document.title = project.title + ' — ' + window.SITE.name;
+  document.title = window.SITE.name;
   var desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute('content', project.description);
 

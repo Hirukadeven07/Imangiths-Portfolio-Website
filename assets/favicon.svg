@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <style>
+    .stroke-el { stroke: #141414; }
+    .fill-el { fill: #141414; }
+    @media (prefers-color-scheme: dark) {
+      .stroke-el { stroke: #FFFFFF; }
+      .fill-el { fill: #FFFFFF; }
+    }
+  </style>
+  <path class="stroke-el" d="M 41 12 H 12 V 52 H 41" fill="none" stroke-width="8" stroke-linecap="butt" stroke-linejoin="miter"/>
+  <rect class="fill-el" x="48" y="8" width="8" height="48"/>
+</svg>
