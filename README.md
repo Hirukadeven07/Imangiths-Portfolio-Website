@@ -1,30 +1,21 @@
 # Chandira Imanjith — portfolio
 
-A static portfolio site: sketches and studies shown on a pannable park map, with a page per project.
+![The homepage: sketches and studies laid out on a park map](docs/homepage.webp)
 
-## Layout
+Sketches and studies in ink and watercolor by Chandira Imanjith, a first-year architecture student at the City School of Architecture, Colombo.
 
-```
-index.html        Home: the park map
-projects.html     All projects, as a bento grid on a cutting mat
-project.html      One project (project.html?p=<slug>)
-about.html        About, with the contact form below
-assets/
-  css/style.css   All styles
-  js/data.js      All content: projects, images, map positions
-  js/             Page scripts (map, park, lists, contact form)
-  img/            Web-ready images
-originals/        Source PDFs and photos (kept locally, not in git)
-```
+## Getting around
 
-## Editing content
+- **Home** is a park map with every drawing on it. Drag to wander, scroll or pinch to zoom, or use the arrow keys and `+` / `−`.
+- Each project follows its own route through the park: a boardwalk, stepping stones, a sand path or a stream.
+- **Click a drawing** to open its project, where the piece is shown whole and then broken into the details that make it.
+- **Projects** lists every project in one place.
+- **About** has a short introduction, with a contact form below it.
 
-Everything shown on the site is defined in `assets/js/data.js`. The comment at the top of that file explains how to add a project.
+## Getting in touch
 
-## Running locally
+The contact form doesn't send anything itself: it opens your own email app with the note ready to send. You can also write directly to [imangithchandira@gmail.com](mailto:imangithchandira@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/chandira-imanjith-b4b7283a2).
 
-```bash
-python serve.py
-```
+## Using the drawings
 
-Then open http://localhost:4173. `serve.py` tells the browser not to keep old copies of pages, so a normal reload always shows your latest edits.
+All drawings are © Chandira Imanjith. Please ask before reusing them.
