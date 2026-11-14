@@ -364,11 +364,13 @@ main { flex: 1 0 auto; }
 
 .contact {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: calc(var(--line) * 4.5) var(--m) calc(var(--line) * 3);
+  padding: var(--section) var(--m);
+  margin-bottom: var(--m);
   text-align: center;
   font-size: 1.125rem; line-height: 1.5;
+  background: #f5f6f7;                 /* a very light silver */
+  border-top: 1px solid var(--ink-25);
 }
-.contact__portrait { width: 7.5rem; aspect-ratio: 1; margin-bottom: calc(var(--line) * 1.25); }
 .contact__lede { max-width: 35rem; margin-top: 12px; color: var(--ink-50); }
 .contact__lede a { transition: color .3s; }
 .contact__lede a:hover { color: var(--ink); }
