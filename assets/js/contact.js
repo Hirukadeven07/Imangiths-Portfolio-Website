@@ -1,4 +1,5 @@
-/* Contact: a short stepped note that opens in the visitor's own email app. */
+/* Contact: a short stepped note, sent by email through Web3Forms. If no access
+   key is set or sending fails, it opens the visitor's own email app instead. */
 (function () {
   'use strict';
 
@@ -87,10 +88,47 @@
     e.preventDefault();
     if (!valid(current)) return;
     if (current < last) { show(current + 1); return; }
-    form.querySelector('[data-thanks]').textContent = 'Thank you, ' + value('name').split(/\s+/)[0] + '.';
-    window.location.href = mailto();
-    show(last + 1);
+    if (sending) return;
+
+    var key = window.SITE.formKey;
+    if (!key) { finish(false); return; }
+
+    sending = true;
+    next.disabled = true;
+    next.textContent = 'Sending…';
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: key,
+        subject: value('reason') + ' — via your portfolio',
+        from_name: value('name'),
+        name: value('name'),
+        email: value('email'),
+        place: value('place'),
+        reason: value('reason'),
+        message: value('message'),
+        botcheck: form.elements.botcheck.checked
+      })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (res) { finish(!!res.success); })
+      .catch(function () { finish(false); });
   });
+
+  var sending = false;
+
+  // sent: true when Web3Forms accepted the note; false falls back to mailto.
+  function finish(sent) {
+    sending = false;
+    next.disabled = false;
+    form.querySelector('[data-thanks]').textContent = 'Thank you, ' + value('name').split(/\s+/)[0] + '.';
+    form.querySelector('[data-sent]').hidden = !sent;
+    form.querySelector('[data-opened]').hidden = sent;
+    if (!sent) window.location.href = mailto();
+    show(last + 1);
+  }
 
   // Enter moves on to the next step instead of doing nothing mid-form.
   form.addEventListener('keydown', function (e) {

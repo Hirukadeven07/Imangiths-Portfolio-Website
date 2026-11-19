@@ -56,6 +56,7 @@
   <p class="contact__lede" data-reveal="text">A question about a drawing, a collaboration, a studio opportunity, or simply a hello: three short steps and your note is on its way. Or write directly: <a href="mailto:imangithchandira@gmail.com">imangithchandira@gmail.com</a></p>
 
   <form class="form" data-form novalidate>
+    <input type="checkbox" name="botcheck" hidden tabindex="-1" autocomplete="off">
     <p data-count>1/3</p>
     <p class="form__label" data-label>Your information</p>
 
@@ -85,7 +86,8 @@
 
     <div class="form__step form__done" data-title="" hidden aria-live="polite">
       <p data-thanks>Thank you.</p>
-      <p>Your email app should now be open with the note ready to send. If nothing opened, write to <a href="mailto:imangithchandira@gmail.com">imangithchandira@gmail.com</a></p>
+      <p data-sent>Your note is on its way. I'll get back to you soon.</p>
+      <p data-opened hidden>Your email app should now be open with the note ready to send. If nothing opened, write to <a href="mailto:imangithchandira@gmail.com">imangithchandira@gmail.com</a></p>
     </div>
 
     <div class="form__dots"></div>

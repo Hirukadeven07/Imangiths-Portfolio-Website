@@ -14,7 +14,7 @@ Sketches and studies in ink and watercolor by Chandira Imanjith, a first-year ar
 
 ## Getting in touch
 
-The contact form doesn't send anything itself: it opens your own email app with the note ready to send. You can also write directly to [imangithchandira@gmail.com](mailto:imangithchandira@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/chandira-imanjith-b4b7283a2).
+The contact form sends your note by email through [Web3Forms](https://web3forms.com). If it can't be sent, it opens your own email app with the note ready to send instead. You can also write directly to [imangithchandira@gmail.com](mailto:imangithchandira@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/chandira-imanjith-b4b7283a2).
 
 ## Licence
 
