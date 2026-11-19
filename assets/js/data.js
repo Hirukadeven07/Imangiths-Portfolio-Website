@@ -21,7 +21,7 @@ window.SITE = {
   email: 'imangithchandira@gmail.com',
   // Web3Forms access key (web3forms.com). Until it is filled in, the contact
   // form falls back to opening the visitor's own email app.
-  formKey: '',
+  formKey: '5a71475e-42ca-448b-a688-51d704f249b9',
   linkedin: 'https://www.linkedin.com/in/chandira-imanjith-b4b7283a2',
   imgPath: 'assets/img/',
   imgExt: '.webp'
